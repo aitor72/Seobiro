@@ -1,5 +1,7 @@
 {
     "name": "aitor/seobiro",
+    "type": "library",
+      "homepage": "https://github.com/aitor72/seobiro",
     "description": "Natural language processing applied to search engine optimization",
     "authors": [
         {
@@ -7,6 +9,7 @@
             "email": "soy@aitor.me"
         }
     ],
+    "license": "MIT",
     "require": {},
     "autoload": {
         "psr-4": {
