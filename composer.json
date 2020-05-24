@@ -10,7 +10,11 @@
         }
     ],
     "license": "MIT",
-    "require": {},
+    "require": {
+      "fabpot/goutte": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "aitor\\seobiro\\": "src/"
