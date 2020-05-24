@@ -1,0 +1,16 @@
+{
+    "name": "aitor/seobiro",
+    "description": "Natural language processing applied to search engine optimization",
+    "authors": [
+        {
+            "name": "Aitor",
+            "email": "soy@aitor.me"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "aitor\\seobiro\\": "src/"
+        }
+    }
+}
