@@ -35,6 +35,22 @@ $language = $seobiro->getLanguage($text);
 $tokens = $seobiro->getTokens($text);
 ```
 
+### Get Normalized Tokens
+```php
+$normalized = $seobiro->getNormalizedTokens($tokens);
+```
+
+### Remove Stopwords from token list
+```php
+$seobiro->removeStopWords($normalized,$language);
+```
+
+### Get Frequency Distribution from tokens
+```php
+$frequency = $seobiro->getFrequencyDistribution($normalized)
+$frequency->getKeyValuesByWeight();
+```
+
 ## Structure
 
 If any of the following are applicable to your project, then the directory structure should follow industry best practices by being named the following.
