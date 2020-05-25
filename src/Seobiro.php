@@ -7,12 +7,15 @@ namespace aitor\seobiro;
 use Goutte\Client;
 use \Exception as Exception;
 use Symfony\Component\HttpClient\HttpClient;
+use andreskrey\Readability\Readability;
+use andreskrey\Readability\Configuration;
+use andreskrey\Readability\ParseException;
 
 class Seobiro
 {
     public function __construct()
     {
-        // constructor body 2
+        // constructor body
     }
 
 
@@ -38,14 +41,13 @@ class Seobiro
 
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-           throw new Exception("Not a valid url");
+            throw new Exception("Not a valid url");
         }
 
         try {
             $crawler = $client->request('GET', $url);
         } catch (Exception $e) {
-			throw new Exception($e->getMessage());
-
+            throw new Exception($e->getMessage());
         }
 
         $response = $client->getInternalResponse();
@@ -54,6 +56,29 @@ class Seobiro
             return $crawler;
         } else {
             throw new Exception("Failed to open the url");
+        }
+    }
+
+
+    public function getText(object $content):string
+    {
+        $configuration = new Configuration([
+          'NormalizeEntities' => false,
+          'SubstituteEntities' => false
+      ]);
+        try {
+            $readability = new Readability($configuration);
+            $readability->parse($content->html());
+            $text = $readability->getcontent();
+            // Remove any remaining html
+            $text = strip_tags($text);
+            // Fix strange chatacters bug
+            $text = str_replace("&#xD;", "", $text);
+            // Remove line-breaks
+            $text = preg_replace( "/\r|\n/", "", $text );
+            return $text;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
 }
