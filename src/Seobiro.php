@@ -76,6 +76,8 @@ class Seobiro
             $text = str_replace("&#xD;", "", $text);
             // Remove line-breaks
             $text = preg_replace( "/\r|\n/", "", $text );
+            // Remove multiple white spaces
+            $text = preg_replace('!\s+!', ' ', $text);
             return $text;
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
