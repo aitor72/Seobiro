@@ -8,6 +8,12 @@
 
 Natural language processing applied to search engine optimization
 
+### Dataforseo (Get urls for keyword in Google)
+```php
+$dataforseo = new \aitor\seobiro\Dataforseo({EMAIL},{KEY});
+$results = $dataforseo->get_organic_results("aitor rodriguez");
+```
+
 
 ### Usage
 ```php
