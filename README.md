@@ -35,7 +35,7 @@ If you discover any security related issues, please email soy[at]aitor.me instea
 
 ## Credits
 
-- [Aitor Rodríguez][https://aitor.me]
+- [Aitor Rodríguez](https://aitor.me)
 
 ## License
 
