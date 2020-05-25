@@ -9,6 +9,31 @@
 Natural language processing applied to search engine optimization
 
 
+### Usage
+```php
+$seobiro = new \aitor\seobiro\Seobiro();
+```
+
+### Get url contents
+```php
+$url = "https://aitor.me";
+$content = $seobiro->getUrl($url);
+```
+
+### Get plain_text from content object
+```php
+$text = $seobiro->getText($content);
+```
+
+### Get language from plain_text
+```php
+$language = $seobiro->getLanguage($text);
+```
+
+### Get Tokens from plain_text
+```php
+$tokens = $seobiro->getTokens($text);
+```
 
 ## Structure
 
