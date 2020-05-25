@@ -16,7 +16,6 @@ class Seobiro
     }
 
 
-
     public function getUrl(string $url):object
     {
         $client = new Client(HttpClient::create(array(
