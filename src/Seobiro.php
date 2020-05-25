@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace aitor\seobiro;
 
 use Goutte\Client;
+use \Exception as Exception;
 use Symfony\Component\HttpClient\HttpClient;
 
 class Seobiro
@@ -21,7 +22,7 @@ class Seobiro
     }
 
 
-    public function getUrl(string $url):string
+    public function getUrl(string $url):object
     {
         $client = new Client(HttpClient::create(array(
         'timeout' => 3,
@@ -43,23 +44,22 @@ class Seobiro
 
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return "Not a valid url";
-            exit();
+           throw new Exception("Not a valid url");
         }
 
         try {
             $crawler = $client->request('GET', $url);
         } catch (Exception $e) {
-            return $e->getMessage();
-            exit();
+			throw new Exception($e->getMessage());
+
         }
 
         $response = $client->getInternalResponse();
 
         if ($response->getStatusCode() == 200) {
-            return $crawler->html();
+            return $crawler;
         } else {
-            return "Failed to open";
+            throw new Exception("Failed to open the url");
         }
     }
 }
