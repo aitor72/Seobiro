@@ -1,20 +1,20 @@
 <?php
 include __DIR__ . "/../vendor/autoload.php";
 
-$hello = new \aitor\seobiro\Seobiro();
+$seobiro = new \aitor\seobiro\Seobiro();
 $array = [
-	"https://aitor.me",
-	"aitor.me",
-	"https://tuqueso.es",
-	"http://example.com",
-	"https://example.com",
-	"https://www.example.com",
-	"example.com"];
+	"https://www.aitor.me"];
 
 foreach($array as $item) {
  try {
-	 $content = $hello->getUrl($item);
-  echo $hello->getText($content);
+	 $content = $seobiro->getUrl($item);
+   $text = $seobiro->getText($content);
+   $language = $seobiro->getLanguage($text);
+   $tokens = $seobiro->getTokens($text);
+   $normalized = $seobiro->getNormalizedTokens($tokens);
+   $frequency = $seobiro->getFrequencyDistribution($normalized);
+   print_r($seobiro->removeStopWords($normalized,$language));
+   //print_r($frequency->getKeyValuesByWeight());
 
 }
 catch (Exception $e) {

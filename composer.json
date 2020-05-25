@@ -12,7 +12,10 @@
     "license": "MIT",
     "require": {
       "fabpot/goutte": "4.0",
-      "andreskrey/readability.php": "2.1"
+      "andreskrey/readability.php": "2.1",
+      "yooper/php-text-analysis": "1.5.6",
+      "voku/stop-words": "2.0.1",
+      "landrok/language-detector": "1.2.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
