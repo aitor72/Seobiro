@@ -13,13 +13,17 @@ use andreskrey\Readability\ParseException;
 use yooper;
 use LanguageDetector;
 use voku\helper\StopWords;
+use Wamania\Snowball\French;
 
 class Seobiro
 {
+
     public function __construct()
     {
-        // constructor body
+
     }
+
+
 
 
     public function getUrl(string $url):object
@@ -78,7 +82,7 @@ class Seobiro
             // Fix strange chatacters bug
             $text = str_replace("&#xD;", "", $text);
             // Remove line-breaks
-            $text = preg_replace( "/\r|\n/", "", $text );
+            $text = preg_replace("/\r|\n/", "", $text);
             // Remove multiple white spaces
             $text = preg_replace('!\s+!', ' ', $text);
             //Remove accents
@@ -87,7 +91,7 @@ class Seobiro
                             'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
                             'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
                             'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y' );
-            $text = strtr( $text, $unwanted_array );
+            $text = strtr($text, $unwanted_array);
             // Allow only asscii
             $text = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text);
             //Remove punctuation
@@ -101,34 +105,41 @@ class Seobiro
 
     public function removeStopWords(array $tokens, string $language):array
     {
-      $stopWords = new StopWords();
-      $stopWords = $stopWords->getStopWordsFromLanguage($language);
-      $tokens = array_diff($tokens, $stopWords);
-      return $tokens;
+        $stopWords = new StopWords();
+        $stopWords = $stopWords->getStopWordsFromLanguage($language);
+        $tokens = array_diff($tokens, $stopWords);
+        return $tokens;
     }
 
 
     public function getTokens(string $text):array
     {
-      return tokenize($text);
+        return tokenize($text);
     }
 
     public function getNormalizedTokens(array $tokens):array
     {
-      return normalize_tokens($tokens);
+        return normalize_tokens($tokens);
     }
 
     public function getFrequencyDistribution(array $tokens):object
     {
-      return freq_dist($tokens);
+        return freq_dist($tokens);
+    }
+
+    public function getStemmedTokens(array $tokens):array
+    {
+        return stem($tokens, \TextAnalysis\Stemmers\SnowballStemmer::class);
     }
 
     public function getLanguage(string $text):string
     {
-      $detector = new LanguageDetector\LanguageDetector();
-      $language = $detector->evaluate($text)->getLanguage();
-      return $language;
+        $detector = new LanguageDetector\LanguageDetector();
+        $language = $detector->evaluate($text)->getLanguage();
+        return $language;
     }
 
-
+    public function process(string $url):object
+    {
+    }
 }
