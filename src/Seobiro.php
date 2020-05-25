@@ -16,11 +16,6 @@ class Seobiro
     }
 
 
-    public function echoPhrase(string $phrase): string
-    {
-        return $phrase;
-    }
-
 
     public function getUrl(string $url):object
     {

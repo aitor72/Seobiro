@@ -11,7 +11,8 @@
     ],
     "license": "MIT",
     "require": {
-      "fabpot/goutte": "4.0"
+      "fabpot/goutte": "4.0",
+      "andreskrey/readability.php": "2.1"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
