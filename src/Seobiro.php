@@ -12,7 +12,7 @@ class Seobiro
 {
     public function __construct()
     {
-        // constructor body
+        // constructor body 2
     }
 
 
