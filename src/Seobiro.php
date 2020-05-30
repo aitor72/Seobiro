@@ -15,12 +15,12 @@ use LanguageDetector;
 use voku\helper\StopWords;
 use Wamania\Snowball\French;
 
+use AsyncRequest;
+
 class Seobiro
 {
-
     public function __construct()
     {
-
     }
 
 
@@ -67,6 +67,25 @@ class Seobiro
     }
 
 
+    public function getUrls(array $urls):array
+    {
+        $asyncRequest = new AsyncRequest\AsyncRequest();
+
+        foreach ($urls as &$url) {
+            if (!filter_var($url["url"], FILTER_VALIDATE_URL)) {
+                throw new Exception("Not a valid url");
+            }
+            $request = new AsyncRequest\Request($url["url"]);
+            $asyncRequest->enqueue($request, function (AsyncRequest\Response $response) {
+                echo $response->getHttpCode();
+            });
+        }
+
+        $asyncRequest->run();
+        return $urls;
+    }
+
+
     public function getText(object $content):string
     {
         $configuration = new Configuration([
@@ -77,25 +96,7 @@ class Seobiro
             $readability = new Readability($configuration);
             $readability->parse($content->html());
             $text = $readability->getcontent();
-            // Remove any remaining html
-            $text = strip_tags($text);
-            // Fix strange chatacters bug
-            $text = str_replace("&#xD;", "", $text);
-            // Remove line-breaks
-            $text = preg_replace("/\r|\n/", "", $text);
-            // Remove multiple white spaces
-            $text = preg_replace('!\s+!', ' ', $text);
-            //Remove accents
-            $unwanted_array = array(    'Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
-                            'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U',
-                            'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
-                            'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
-                            'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y' );
-            $text = strtr($text, $unwanted_array);
-            // Allow only asscii
-            $text = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text);
-            //Remove punctuation
-            $text = preg_replace("#[[:punct:]]#", " ", $text);
+            $text =  $this->clean($text);
 
             return $text;
         } catch (Exception $e) {
@@ -139,7 +140,67 @@ class Seobiro
         return $language;
     }
 
-    public function process(string $url):object
+
+    public function clean(string $text):string
     {
+        $text = strip_tags($text);
+        // Fix strange chatacters bug
+        $text = str_replace("&#xD;", "", $text);
+        // Remove line-breaks
+        $text = preg_replace("/\r|\n/", "", $text);
+        // Remove multiple white spaces
+        $text = preg_replace('!\s+!', ' ', $text);
+        //Remove accents
+        $unwanted_array = array(    'Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+                      'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U',
+                      'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
+                      'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
+                      'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y' );
+        $text = strtr($text, $unwanted_array);
+        // Allow only asscii
+        $text = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text);
+        //Remove punctuation
+        $text = preg_replace("#[[:punct:]]#", " ", $text);
+
+        return $text;
+    }
+
+
+    public function getHeaders(object $content):array
+    {
+        $dom = new \DOMDocument();
+        $dom->loadHTML($content->html());
+        $h1 =   $dom->getElementsByTagName('h1');
+        $headers["h1"] = [];
+        foreach ($h1 as $node) {
+            array_push($headers["h1"], $this->clean($node->textContent));
+        }
+        $h2 =   $dom->getElementsByTagName('h2');
+        $headers["h2"] = [];
+        foreach ($h2 as $node) {
+            array_push($headers["h2"], $this->clean($node->textContent));
+        }
+        $h3 =   $dom->getElementsByTagName('h3');
+        $headers["h3"] = [];
+        foreach ($h3 as $node) {
+            array_push($headers["h3"], $this->clean($node->textContent));
+        }
+        $h4 =   $dom->getElementsByTagName('h4');
+        $headers["h4"] = [];
+        foreach ($h4 as $node) {
+            array_push($headers["h4"], $this->clean($node->textContent));
+        }
+        $h5 =   $dom->getElementsByTagName('h5');
+        $headers["h5"] = [];
+        foreach ($h5 as $node) {
+            array_push($headers["h5"], $this->clean($node->textContent));
+        }
+        $h4 =   $dom->getElementsByTagName('h6');
+        $headers["h6"] = [];
+        foreach ($h4 as $node) {
+            array_push($headers["h6"], $this->clean($node->textContent));
+        }
+
+        return $headers;
     }
 }
