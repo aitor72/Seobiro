@@ -141,7 +141,7 @@ class Seobiro
     }
 
 
-    public function clean(string $text):string
+    public function clean(string $text , bool $lower = null):string
     {
         $text = strip_tags($text);
         // Fix strange chatacters bug
@@ -162,6 +162,12 @@ class Seobiro
         //Remove punctuation
         $text = preg_replace("#[[:punct:]]#", " ", $text);
 
+        //If $lower
+        if ($lower) {
+          $text = strtolower($text);
+        }
+
+
         return $text;
     }
 
@@ -173,32 +179,32 @@ class Seobiro
         $h1 =   $dom->getElementsByTagName('h1');
         $headers["h1"] = [];
         foreach ($h1 as $node) {
-            array_push($headers["h1"], $this->clean($node->textContent));
+            array_push($headers["h1"], $this->clean($node->textContent,true));
         }
         $h2 =   $dom->getElementsByTagName('h2');
         $headers["h2"] = [];
         foreach ($h2 as $node) {
-            array_push($headers["h2"], $this->clean($node->textContent));
+            array_push($headers["h2"], $this->clean($node->textContent,true));
         }
         $h3 =   $dom->getElementsByTagName('h3');
         $headers["h3"] = [];
         foreach ($h3 as $node) {
-            array_push($headers["h3"], $this->clean($node->textContent));
+            array_push($headers["h3"], $this->clean($node->textContent,true));
         }
         $h4 =   $dom->getElementsByTagName('h4');
         $headers["h4"] = [];
         foreach ($h4 as $node) {
-            array_push($headers["h4"], $this->clean($node->textContent));
+            array_push($headers["h4"], $this->clean($node->textContent,true));
         }
         $h5 =   $dom->getElementsByTagName('h5');
         $headers["h5"] = [];
         foreach ($h5 as $node) {
-            array_push($headers["h5"], $this->clean($node->textContent));
+            array_push($headers["h5"], $this->clean($node->textContent,true));
         }
         $h4 =   $dom->getElementsByTagName('h6');
         $headers["h6"] = [];
         foreach ($h4 as $node) {
-            array_push($headers["h6"], $this->clean($node->textContent));
+            array_push($headers["h6"], $this->clean($node->textContent,true));
         }
 
         return $headers;
