@@ -209,4 +209,19 @@ class Seobiro
 
         return $headers;
     }
+
+
+        public function getTitle(object $content):string
+        {
+          $dom = new \DOMDocument();
+          $dom->loadHTML($content->html());
+          $title =   $dom->getElementsByTagName('title');
+          if($title->length > 0){
+            $title =  $this->clean($title->item(0)->nodeValue,true);
+          } else {
+            return 0;
+          }
+
+          return $title;
+        }
 }

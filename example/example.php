@@ -19,6 +19,8 @@ foreach ($results as $item) {
         $content = $seobiro->getUrl($item["url"]);
         $text = $seobiro->getText($content);
         $item["content"] = $text;
+        $title = $seobiro->getTitle($content);
+        $item["title"] =$title;
         $headers = $seobiro->getHeaders($content);
         $item["headers"] =$headers;
         $language = $seobiro->getLanguage($text);
