@@ -21,6 +21,8 @@ foreach ($results as $item) {
         $item["content"] = $text;
         $title = $seobiro->getTitle($content);
         $item["title"] =$title;
+        $description = $seobiro->getDescription($content);
+        $item["description"] =$description;
         $headers = $seobiro->getHeaders($content);
         $item["headers"] =$headers;
         $language = $seobiro->getLanguage($text);

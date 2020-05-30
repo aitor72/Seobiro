@@ -146,6 +146,8 @@ class Seobiro
         $text = strip_tags($text);
         // Fix strange chatacters bug
         $text = str_replace("&#xD;", "", $text);
+        //Remove &nbsp
+        $text = str_replace("&nbsp;", '', $text);
         // Remove line-breaks
         $text = preg_replace("/\r|\n/", "", $text);
         // Remove multiple white spaces
@@ -161,6 +163,7 @@ class Seobiro
         $text = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text);
         //Remove punctuation
         $text = preg_replace("#[[:punct:]]#", " ", $text);
+
 
         //If $lower
         if ($lower) {
@@ -223,5 +226,22 @@ class Seobiro
           }
 
           return $title;
+        }
+
+        public function getDescription(object $content):string
+        {
+          $dom = new \DOMDocument();
+          $dom->loadHTML($content->html());
+          $metas = $dom->getElementsByTagName('meta');
+          for ($i = 0; $i < $metas->length; $i++)
+          {
+              $meta = $metas->item($i);
+              if($meta->getAttribute('name') == 'description')
+                  $description = $this->clean($meta->getAttribute('content'),true);
+              if($meta->getAttribute('name') == 'keywords')
+                  $keywords = $meta->getAttribute('content');
+          }
+
+          return $description;
         }
 }
