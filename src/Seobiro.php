@@ -15,6 +15,12 @@ use LanguageDetector;
 use voku\helper\StopWords;
 use Wamania\Snowball\French;
 
+use Google\Cloud\Language\LanguageClient;
+use Google\Cloud\Language\V1\Document;
+use Google\Cloud\Language\V1\Document\Type;
+use Google\Cloud\Language\V1\LanguageServiceClient;
+use Google\Cloud\Language\V1\Entity\Type as EntityType;
+
 use AsyncRequest;
 
 class Seobiro
@@ -141,7 +147,7 @@ class Seobiro
     }
 
 
-    public function clean(string $text , bool $lower = null):string
+    public function clean(string $text, bool $lower = null):string
     {
         $text = strip_tags($text);
         // Fix strange chatacters bug
@@ -167,7 +173,7 @@ class Seobiro
 
         //If $lower
         if ($lower) {
-          $text = strtolower($text);
+            $text = strtolower($text);
         }
 
 
@@ -182,66 +188,112 @@ class Seobiro
         $h1 =   $dom->getElementsByTagName('h1');
         $headers["h1"] = [];
         foreach ($h1 as $node) {
-            array_push($headers["h1"], $this->clean($node->textContent,true));
+            array_push($headers["h1"], $this->clean($node->textContent, true));
         }
         $h2 =   $dom->getElementsByTagName('h2');
         $headers["h2"] = [];
         foreach ($h2 as $node) {
-            array_push($headers["h2"], $this->clean($node->textContent,true));
+            array_push($headers["h2"], $this->clean($node->textContent, true));
         }
         $h3 =   $dom->getElementsByTagName('h3');
         $headers["h3"] = [];
         foreach ($h3 as $node) {
-            array_push($headers["h3"], $this->clean($node->textContent,true));
+            array_push($headers["h3"], $this->clean($node->textContent, true));
         }
         $h4 =   $dom->getElementsByTagName('h4');
         $headers["h4"] = [];
         foreach ($h4 as $node) {
-            array_push($headers["h4"], $this->clean($node->textContent,true));
+            array_push($headers["h4"], $this->clean($node->textContent, true));
         }
         $h5 =   $dom->getElementsByTagName('h5');
         $headers["h5"] = [];
         foreach ($h5 as $node) {
-            array_push($headers["h5"], $this->clean($node->textContent,true));
+            array_push($headers["h5"], $this->clean($node->textContent, true));
         }
         $h4 =   $dom->getElementsByTagName('h6');
         $headers["h6"] = [];
         foreach ($h4 as $node) {
-            array_push($headers["h6"], $this->clean($node->textContent,true));
+            array_push($headers["h6"], $this->clean($node->textContent, true));
         }
 
         return $headers;
     }
 
 
-        public function getTitle(object $content):string
-        {
-          $dom = new \DOMDocument();
-          $dom->loadHTML($content->html());
-          $title =   $dom->getElementsByTagName('title');
-          if($title->length > 0){
-            $title =  $this->clean($title->item(0)->nodeValue,true);
-          } else {
-            return 0;
-          }
-
-          return $title;
+    public function getTitle(object $content):string
+    {
+        $dom = new \DOMDocument();
+        $dom->loadHTML($content->html());
+        $titles =   $dom->getElementsByTagName('title');
+        $title = "";
+        if ($titles->length > 0) {
+            $title =  $this->clean($titles->item(0)->nodeValue, true);
         }
 
-        public function getDescription(object $content):string
-        {
-          $dom = new \DOMDocument();
-          $dom->loadHTML($content->html());
-          $metas = $dom->getElementsByTagName('meta');
-          for ($i = 0; $i < $metas->length; $i++)
-          {
-              $meta = $metas->item($i);
-              if($meta->getAttribute('name') == 'description')
-                  $description = $this->clean($meta->getAttribute('content'),true);
-              if($meta->getAttribute('name') == 'keywords')
-                  $keywords = $meta->getAttribute('content');
-          }
+        return $title;
+    }
 
-          return $description;
+    public function getDescription(object $content):string
+    {
+        $dom = new \DOMDocument();
+        $dom->loadHTML($content->html());
+        $metas = $dom->getElementsByTagName('meta');
+        $description = "";
+        for ($i = 0; $i < $metas->length; $i++) {
+            $meta = $metas->item($i);
+            if ($meta->getAttribute('name') == 'description') {
+                $description = $this->clean($meta->getAttribute('content'), true);
+            }
+            if ($meta->getAttribute('name') == 'keywords') {
+                $keywords = $meta->getAttribute('content');
+            }
         }
+
+        return $description;
+    }
+
+
+    public function getGoogleEntities(string $text):array
+    {
+        $language = new LanguageServiceClient([
+            'credentials' => '../key.json'
+        ]);
+
+        $document = (new Document())
+        ->setContent($text)
+        ->setType(Type::PLAIN_TEXT);
+
+        // Call the analyzeEntities function
+        $response = $language->analyzeEntities($document, []);
+        $entities = $response->getEntities();
+
+        $entiti = array();
+        foreach ($entities as $entity) {
+            array_push($entiti, array('name' => $entity->getName() , 'salience' => $entity->getSalience() , "type" => EntityType::name($entity->getType())));
+        }
+
+        return $entiti;
+    }
+
+    public function getGoogleSentiment(string $text):array
+    {
+        $language = new LanguageServiceClient([
+            'credentials' => '../key.json'
+        ]);
+
+        $document = (new Document())
+        ->setContent($text)
+        ->setType(Type::PLAIN_TEXT);
+
+        // Call the analyzeEntities function
+        $response = $language->analyzeSentiment($document);
+        $document_sentiment = $response->getDocumentSentiment();
+
+        $entiti = array();
+
+            array_push($entiti, array('magnitude' => $document_sentiment->getMagnitude() , 'score' => $document_sentiment->getScore() ));
+
+
+        return  $entiti;
+    }
 }

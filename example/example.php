@@ -2,17 +2,20 @@
 include __DIR__ . "/../vendor/autoload.php";
 
 
+
+
 $rustart = getrusage();
 
 $dataforseo = new \aitor\seobiro\Dataforseo("aitor.rodriguez03@estudiant.upf.edu", "43a65714c6ce82da");
 /*
-$results = $dataforseo->get_organic_results("aitor rodriguez");
 echo count($results);
 */
+//$results = $dataforseo->get_organic_results("aitor rodriguez");
+
 
 $seobiro = new \aitor\seobiro\Seobiro();
 
-$results = [["url" => "https://www.vozpopuli.com/bienestar/como-adelgazar-truco-perder-peso_0_1329768405.html"]];
+$results = [["url" => "https://aitor.me"]];
 
 foreach ($results as $item) {
     try {
@@ -33,6 +36,10 @@ foreach ($results as $item) {
         $tokens = $seobiro->removeStopWords($normalized, $language);
         //print_r($frequency->getKeyValuesByWeight());
         $tokens = $seobiro->getStemmedTokens($tokens);
+        $GoogleEntities = $seobiro->getGoogleEntities($text);
+        $item["google_entities"] =$GoogleEntities;
+        $GoogleSentiment = $seobiro->getGoogleSentiment($text);
+        $item["google_sentiment"] = $GoogleSentiment;
 
         print_r($item);
     } catch (Exception $e) {
