@@ -255,21 +255,25 @@ class Seobiro
 
     public function getGoogleEntities(string $text):array
     {
-        $language = new LanguageServiceClient([
+        try {
+            $language = new LanguageServiceClient([
             'credentials' => '../key.json'
         ]);
 
-        $document = (new Document())
+            $document = (new Document())
         ->setContent($text)
         ->setType(Type::PLAIN_TEXT);
 
-        // Call the analyzeEntities function
-        $response = $language->analyzeEntities($document, []);
-        $entities = $response->getEntities();
+            // Call the analyzeEntities function
+            $response = $language->analyzeEntities($document, []);
+            $entities = $response->getEntities();
 
-        $entiti = array();
-        foreach ($entities as $entity) {
-            array_push($entiti, array('name' => $entity->getName() , 'salience' => $entity->getSalience() , "type" => EntityType::name($entity->getType())));
+            $entiti = array();
+            foreach ($entities as $entity) {
+                array_push($entiti, array('name' => $entity->getName() , 'salience' => $entity->getSalience() , "type" => EntityType::name($entity->getType())));
+            }
+        } finally {
+            $language->close();
         }
 
         return $entiti;
@@ -277,21 +281,25 @@ class Seobiro
 
     public function getGoogleSentiment(string $text):array
     {
-        $language = new LanguageServiceClient([
+        try {
+            $language = new LanguageServiceClient([
             'credentials' => '../key.json'
         ]);
 
-        $document = (new Document())
+            $document = (new Document())
         ->setContent($text)
         ->setType(Type::PLAIN_TEXT);
 
-        // Call the analyzeEntities function
-        $response = $language->analyzeSentiment($document);
-        $document_sentiment = $response->getDocumentSentiment();
+            // Call the analyzeEntities function
+            $response = $language->analyzeSentiment($document);
+            $document_sentiment = $response->getDocumentSentiment();
 
-        $entiti = array();
+            $entiti = array();
 
             array_push($entiti, array('magnitude' => $document_sentiment->getMagnitude() , 'score' => $document_sentiment->getScore() ));
+        } finally {
+            $language->close();
+        }
 
 
         return  $entiti;
