@@ -67,9 +67,14 @@ $frequency = $seobiro->getFrequencyDistribution($normalized)
 $frequency->getKeyValuesByWeight();
 ```
 
-### Get Language from content
+### Get Meta Description from content
 ```php
-$language = $seobiro->getLanguage($text);
+$description = $seobiro->getDescription($content);
+```
+
+### Get Meta Title from content
+```php
+$title = $seobiro->getTitle($content);
 ```
 
 ### Get Headers (h1-h6) from content
