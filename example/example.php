@@ -10,12 +10,12 @@ $dataforseo = new \aitor\seobiro\Dataforseo("aitor.rodriguez03@estudiant.upf.edu
 /*
 echo count($results);
 */
-//$results = $dataforseo->get_organic_results("aitor rodriguez");
+$results = $dataforseo->get_organic_results("aitor rodriguez");
 
 
 $seobiro = new \aitor\seobiro\Seobiro();
 
-$results = [["url" => "https://aitor.me"]];
+//$results = [["url" => "https://cronicasgeek.com"]];
 
 foreach ($results as $item) {
     try {

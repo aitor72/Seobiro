@@ -46,6 +46,11 @@ $tokens = $seobiro->getTokens($text);
 $normalized = $seobiro->getNormalizedTokens($tokens);
 ```
 
+### Get Stemmed Tokens
+```php
+  $tokens = $seobiro->getStemmedTokens($tokens);
+```
+
 ### Remove Stopwords from token list
 ```php
 $seobiro->removeStopWords($normalized,$language);
@@ -56,6 +61,28 @@ $seobiro->removeStopWords($normalized,$language);
 $frequency = $seobiro->getFrequencyDistribution($normalized)
 $frequency->getKeyValuesByWeight();
 ```
+
+### Get Language from content
+```php
+$language = $seobiro->getLanguage($text);
+```
+
+### Get Headers (h1-h6) from content
+```php
+$headers = $seobiro->getHeaders($content);
+```
+
+### Get Google Cloud NLP Entities
+```php
+$GoogleEntities = $seobiro->getGoogleEntities($text);
+```
+
+### Get Google Cloud NLP Sentiment
+```php
+$GoogleSentiment = $seobiro->getGoogleSentiment($text);
+```
+
+
 
 ## Structure
 
