@@ -14,6 +14,11 @@ $dataforseo = new \aitor\seobiro\Dataforseo({EMAIL},{KEY});
 $results = $dataforseo->get_organic_results("aitor rodriguez");
 ```
 
+### Google Cloud (NLP)
+```php
+// No need to initiate, just place the key.json in the main directory.
+```
+
 
 ### Usage
 ```php
